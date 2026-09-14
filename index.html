@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusPrep AI - Ultramodern Campus Placement Assistant</title>
+  
+  <!-- Google Fonts: Oswald (300, 400, 500, 600, 700) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <!-- FontAwesome Icons CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+  <!-- Ambient Light Orbs for Glassmorphism -->
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
+
+  <!-- Header & Recruiter Navigation Bar -->
+  <header class="app-header">
+    <div class="brand-container">
+      <div class="brand-icon">
+        <i class="fa-solid fa-brain"></i>
+      </div>
+      <div>
+        <h1 class="brand-title">CAMPUSPREP AI</h1>
+        <span class="hud-badge"><i class="fa-solid fa-bolt"></i> Placement Intelligence v1.0</span>
+      </div>
+    </div>
+
+    <div class="header-controls">
+      <div class="company-select-wrapper">
+        <label for="companySelect"><i class="fa-solid fa-building"></i> Target Recruiter:</label>
+        <select id="companySelect" class="glass-select">
+          <option value="zoho" selected>Zoho Corporation (DSA / Systems)</option>
+          <option value="tcs">TCS (Core CS / DBMS / Aptitude)</option>
+          <option value="cognizant">Cognizant (Web / OOP / HR)</option>
+          <option value="infosys">Infosys (Algorithms / Architecture / AI)</option>
+        </select>
+      </div>
+
+      <div class="telemetry-indicator">
+        <div class="pulse-dot"></div>
+        <span id="apiStatusText">API TELEMETRY ONLINE (0.0.0.0:8000)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Split Layout -->
+  <main class="dashboard-container">
+    
+    <!-- LEFT PANEL: ATS Resume Scanner & Competency Matrix -->
+    <section class="glass-panel ats-panel">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fa-solid fa-file-contract"></i> ATS Resume Scanner & Matrix
+        </h2>
+        <span class="hud-badge" id="companyTrackBadge">Zoho Track Active</span>
+      </div>
+
+      <div class="resume-input-area">
+        <textarea id="resumeText" class="glass-textarea" placeholder="Paste raw resume text here to analyze against recruiter target competencies..."></textarea>
+        <div class="input-actions">
+          <button id="btnLoadSampleResume" class="btn-glass"><i class="fa-solid fa-magic"></i> Load Sample Developer Resume</button>
+          <button id="btnScanResume" class="btn-glass btn-primary"><i class="fa-solid fa-magnifying-glass-chart"></i> Scan & Analyze ATS Match</button>
+        </div>
+      </div>
+
+      <!-- ATS Analysis Results Area -->
+      <div id="atsResults" class="ats-results-container" style="display: none;">
+        
+        <!-- Score Hero -->
+        <div class="ats-score-hero">
+          <div class="score-gauge-ring" id="scoreGauge">
+            <div class="score-gauge-inner">
+              <span class="score-number" id="atsScoreValue">0%</span>
+              <span class="score-label">ATS MATCH</span>
+            </div>
+          </div>
+          <div class="ats-summary-text">
+            <h4 id="atsHeadlineText">ATS Alignment Analysis</h4>
+            <p id="atsSubtext">Scanning resume against company target technical domain benchmarks...</p>
+          </div>
+        </div>
+
+        <!-- Domain Breakdown Matrix -->
+        <div class="matrix-grid" id="matrixGrid">
+          <!-- Dynamically populated matrix cards -->
+        </div>
+
+        <!-- Missing Competencies Tag Cloud -->
+        <div class="missing-competencies-section">
+          <h3 class="section-title" style="font-size: 0.95rem;">
+            <i class="fa-solid fa-triangle-exclamation" style="color: var(--accent-rose);"></i> Missing Competency Gaps
+          </h3>
+          <div class="tags-wrapper" id="missingTags">
+            <!-- Dynamically populated tags -->
+          </div>
+        </div>
+
+        <!-- Actionable Recommendations -->
+        <div class="recommendations-section">
+          <h3 class="section-title" style="font-size: 0.95rem;">
+            <i class="fa-solid fa-lightbulb" style="color: var(--accent-cyan);"></i> Actionable Resume Gap Fixes
+          </h3>
+          <div class="recommendations-list" id="recommendationsList">
+            <!-- Dynamically populated recommendations -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- RIGHT PANEL: Multimodal AI Interview Studio -->
+    <section class="glass-panel interview-panel">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="fa-solid fa-headset"></i> Multimodal AI Interview Studio
+        </h2>
+        <span class="hud-badge" id="sessionStepBadge">Step 1 of 5</span>
+      </div>
+
+      <!-- Webcam HUD Frame -->
+      <div class="webcam-hud-container">
+        <video id="webcamFeed" autoplay muted playsinline></video>
+        <canvas id="hudOverlay"></canvas>
+        <div class="hud-top-bar">
+          <div class="hud-rec-badge">
+            <div class="rec-dot"></div> LIVE CAM HUD FEED
+          </div>
+          <span class="hud-badge" style="background: rgba(0,0,0,0.6);" id="hudCompanyBadge">ZOHO INTERVIEWER</span>
+        </div>
+      </div>
+
+      <!-- Glowing Telemetry Counters Bar -->
+      <div class="telemetry-counters-bar">
+        <div class="counter-card">
+          <div class="counter-title">Speaking Pace</div>
+          <div class="counter-value wpm" id="telemetryWPM">0 <span style="font-size: 0.8rem;">WPM</span></div>
+        </div>
+        <div class="counter-card">
+          <div class="counter-title">Filler Words</div>
+          <div class="counter-value fillers" id="telemetryFillers">0</div>
+        </div>
+        <div class="counter-card">
+          <div class="counter-title">Technical Score</div>
+          <div class="counter-value score" id="telemetryScore">0.0 <span style="font-size: 0.8rem;">/ 10</span></div>
+        </div>
+      </div>
+
+      <!-- Interview Question Prompt Card -->
+      <div class="prompt-card">
+        <div class="prompt-meta">
+          <span class="hud-badge" id="promptCategoryBadge">DSA</span>
+          <span class="hud-badge" style="color: var(--accent-sky); border-color: rgba(56,189,248,0.3);" id="promptDifficultyBadge">Medium</span>
+        </div>
+        <p class="prompt-text" id="promptQuestionText">Click "Initiate Interview Session" to load your first AI technical question.</p>
+        <div class="prompt-actions">
+          <button id="btnVocalize" class="btn-vocalize" disabled><i class="fa-solid fa-volume-high"></i> Vocalize Question (TTS)</button>
+          <button id="btnStartSession" class="btn-glass btn-primary" style="padding: 6px 16px;"><i class="fa-solid fa-play"></i> Initiate Interview Session</button>
+        </div>
+      </div>
+
+      <!-- Live STT Transcription Feed & Controls -->
+      <div class="transcription-area">
+        <div class="stt-controls">
+          <button id="btnMicRecord" class="btn-mic" disabled>
+            <i class="fa-solid fa-microphone"></i> <span id="micBtnText">Start Speech-to-Text Answer</span>
+          </button>
+          <button id="btnSubmitAnswer" class="btn-glass btn-primary" disabled>
+            <i class="fa-solid fa-paper-plane"></i> Submit Answer
+          </button>
+        </div>
+
+        <textarea id="answerTranscriptionText" class="glass-textarea" style="height: 100px;" placeholder="Your live transcribed answer will appear here. You can also type directly..." disabled></textarea>
+        <span class="stt-status-text" id="sttStatusMsg">Voice recognition ready. Click record or type answer to begin.</span>
+      </div>
+
+      <!-- Continuous Critique Feedback Feed -->
+      <div id="turnFeedbackArea" class="turn-feedback-card" style="display: none;">
+        <h4 style="color: var(--accent-cyan); font-size: 0.95rem;"><i class="fa-solid fa-comments"></i> AI Continuous Critique</h4>
+        <p class="turn-critique-text" id="turnCritiqueContent">Answer evaluated...</p>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- Full-Width Glass Panel: Curated Placement Preparation Courses & Learning Resources -->
+  <section class="courses-container" style="max-width: 1700px; margin: 0 auto 32px auto; padding: 0 32px;">
+    <div class="glass-panel" style="padding: 28px;">
+      <div class="section-header" style="margin-bottom: 20px;">
+        <h2 class="section-title">
+          <i class="fa-solid fa-graduation-cap" style="color: var(--accent-cyan);"></i> Curated Campus Placement Courses & Learning Playlists
+        </h2>
+        <span class="hud-badge"><i class="fa-solid fa-layer-group"></i> 4 Core Mastery Tracks</span>
+      </div>
+
+      <!-- Category Filter Tabs Bar -->
+      <div id="courseCategoryTabs" class="category-tabs-bar" style="display: flex; gap: 10px; margin-bottom: 24px; flex-wrap: wrap;">
+        <!-- Dynamically populated category pills -->
+      </div>
+
+      <div id="coursesGrid" class="courses-categories-grid" style="display: flex; flex-direction: column; gap: 28px;">
+        <!-- Dynamically populated category blocks -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Final Scorecard Summary Modal -->
+  <div id="scorecardModal" class="modal-backdrop">
+    <div class="scorecard-modal glass-panel-glow">
+      <h2 class="modal-title"><i class="fa-solid fa-trophy" style="color: #ffd700;"></i> Placement Session Scorecard</h2>
+      <p style="text-align: center; color: var(--text-muted);">Congratulations! You have completed all 5 turns of your technical interview.</p>
+      
+      <div class="scorecard-stats-grid">
+        <div class="counter-card">
+          <div class="counter-title">Final Avg Technical Score</div>
+          <div class="counter-value score" id="modalFinalScore">0.0 / 10</div>
+        </div>
+        <div class="counter-card">
+          <div class="counter-title">Average Speaking Pace</div>
+          <div class="counter-value wpm" id="modalFinalWPM">0 WPM</div>
+        </div>
+        <div class="counter-card">
+          <div class="counter-title">Total Filler Words</div>
+          <div class="counter-value fillers" id="modalFinalFillers">0</div>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center; gap: 16px; margin-top: 10px;">
+        <button id="btnCloseScorecard" class="btn-glass btn-primary"><i class="fa-solid fa-rotate-right"></i> Start New Session</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript Controller -->
+  <script src="/static/app.js"></script>
+</body>
+</html>
