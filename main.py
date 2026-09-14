@@ -470,16 +470,30 @@ def execute_interview_turn(req: SessionTurnRequest):
         "next_question": next_question
     }
 
-# --- Static File Serving ---
+# --- Static File Serving & Robust Path Resolution ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-static_dir = os.path.join(BASE_DIR, "static")
+CANDIDATE_PATHS = [
+    os.path.join(BASE_DIR, "static"),
+    os.path.join(os.path.dirname(BASE_DIR), "static"),
+    os.path.join(os.getcwd(), "static"),
+]
+
+static_dir = None
+for p in CANDIDATE_PATHS:
+    if os.path.exists(os.path.join(p, "index.html")):
+        static_dir = p
+        break
+
+if not static_dir:
+    static_dir = os.path.join(BASE_DIR, "static")
 
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 @app.get("/")
 def read_root():
-    index_path = os.path.join(static_dir, "index.html")
-    if os.path.exists(index_path):
-        return FileResponse(index_path)
+    if static_dir:
+        index_path = os.path.join(static_dir, "index.html")
+        if os.path.exists(index_path):
+            return FileResponse(index_path)
     return {"message": "CampusPrep AI API is running."}
