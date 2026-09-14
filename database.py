@@ -2,15 +2,23 @@ import sqlite3
 import os
 import json
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "campusprep.db")
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+IS_VERCEL = os.environ.get("VERCEL", "0") == "1" or os.environ.get("AWS_LAMBDA_FUNCTION_NAME") is not None
+
+if IS_VERCEL:
+    DB_PATH = "/tmp/campusprep.db"
+else:
+    DB_PATH = os.path.join(BASE_DIR, "campusprep.db")
 
 def get_db_connection():
+    if not os.path.exists(DB_PATH):
+        init_db()
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
-    conn = get_db_connection()
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     # Create Companies Table
